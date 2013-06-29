@@ -29,3 +29,4 @@ app.info
 coverage_report
 *.pbm.gz
 *.ppm.gz
+POTFILES
