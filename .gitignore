@@ -12,7 +12,6 @@ Makefile.in
 /configure
 *~
 /build*/
-m4
 GIT_REVISION
 SVN_REVISION
 libtool
@@ -28,3 +27,5 @@ libtool
 *.gcda
 app.info
 coverage_report
+*.pbm.gz
+*.ppm.gz
