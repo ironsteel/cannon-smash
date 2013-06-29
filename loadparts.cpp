@@ -245,7 +245,7 @@ bool parts::loadfile(const char *str)
 
 	while ('\\' == line[l-1]) {
             // concat next line(s)
-	    int bufsize = clamp(0U, sizeof(line)-l, sizeof(line)-1);
+	    int bufsize = clamp((size_t)0, sizeof(line)-l, sizeof(line)-1);
 	    fgets(&line[l-2], bufsize, fp);
 	    if (feof((FILE*)fp)) break;
 	    l = strlen(line);

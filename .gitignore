@@ -30,3 +30,4 @@ coverage_report
 *.pbm.gz
 *.ppm.gz
 POTFILES
+csmash

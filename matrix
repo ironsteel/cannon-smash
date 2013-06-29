@@ -42,7 +42,7 @@
 
 /* __BEGIN__BEGIN__ */
 //__NAMESPACE_BEGIN(ese);
-#if (!defined __GNUG__) || (__GNUC__ == 3)
+#if (!defined __GNUG__) || (__GNUC__ >= 3)
 template<typename T>
 void swap(T& a, T& b)
 {

@@ -32,7 +32,7 @@ public:
 
   static GLuint m_number[10];
 private:
-  void BallView::DrawTargetCircle();
+  void DrawTargetCircle();
   GLUquadricObj *m_quad;
 
   void DrawBall();
