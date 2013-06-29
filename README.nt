@@ -1,0 +1,26 @@
+How to compile csmash on WindowsNT.
+
+Note: I have no idea if it can be compiled on windows9x.
+
+You need some external libraries.
+  zlib-1.1.3, SDL-1.1.3, gtk-1.2
+You can get these libraries from
+  <URL:http://www.cdrom.com/pub/infozip/zlib/>,
+  <URL:http://www.libsdl.org/>,
+  <URL:http://www.gimp.org/~tml/gimp/win32/new-downloads.html>,
+ respectively.
+It is better you get SDL_mixer, SDL_image from libsdl.org too.
+
+Use of gnu-make is strongly recommended. 
+You can build csmash with nmake.exe (I believe), but I do not tested it well.
+You may need some sh.exe or bash.exe too, when you are using gnu-make.
+
+If you have gnu-make, run "gmake -f Makefile.w32".
+Object files are created in objs.win32 subdirectory.
+If you are using nmake.exe, run "nmake -f Makefile.nt"
+Object files are created in this directory.
+
+# OBSOLETE!
+There may be a separate binary distribution named 
+"csmashlibs-i386-win32.tar.gz". It contains the libraries you need.
+# OBSOLETE!

@@ -1,0 +1,109 @@
+/***********************************************************************
+ *	c:/users/wata/src/csmash-0.3.8.new/float
+ *	$Id: float,v 1.3 2002/03/05 14:21:21 yotsuya Exp $
+ *
+ *	Copyright by ESESoft.
+ *
+ *	Redistribution and use in source and binary forms, with or without
+ *	modification, are permitted provided that the following conditions
+ *	are met:
+ *
+ *	Redistributions of source code must retain the above copyright
+ *	notice, this list of conditions and the following disclaimer. 
+ *
+ *	Redistributions in binary form must reproduce the above copyright
+ *	notice, this list of conditions and the following disclaimer
+ *	in the documentation and/or other materials provided with the
+ *	distribution. 
+ *
+ *	The name of the author may not be used to endorse or promote
+ *	products derived from this software without specific prior written
+ *	permission. 
+ *
+ *	THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS
+ *	OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *	ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+ *	DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ *	DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ *	GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ *	WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ *	NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ***********************************************************************/
+#ifndef __ESESoft_wata_4637__float__INCLUDED__
+#define __ESESoft_wata_4637__float__INCLUDED__
+/***********************************************************************/
+#include <math.h>
+#include <float.h>
+
+/* __BEGIN__BEGIN__ */
+
+#if 1
+typedef float Float;
+#define Float_MAX FLT_MAX
+#define Float_MIN FLT_MIN
+#define Float_EPS FLT_EPSILON
+#else
+typedef double Float;
+#define Float_MAX DBL_MAX
+#define Float_MIN DBL_MIN
+#define Float_EPS DBL_EPSILON
+#endif
+
+#ifdef __CYGWIN__
+inline float fabsF(float f) { return fabs(f); }
+inline float floorF(float f) { return floor(f); }
+inline float ceilF(float f) { return ceil(f); }
+inline float sqrtF(float f) { return sqrt(f); }
+inline float sinF(float f) { return sin(f); }
+inline float cosF(float f) { return cos(f); }
+inline float tanF(float f) { return tan(f); }
+inline float asinF(float f) { return asin(f); }
+inline float acosF(float f) { return acos(f); }
+inline float atan2F(float y, float x) { return atan2(y, x); }
+inline float expF(float f) { return exp(f); }
+inline float logF(float f) { return log(f); }
+inline float log10F(float f) { return log10(f); }
+inline float powF(float x, float y) { return pow(x, y); }
+#else
+inline float fabsF(float f) { return fabsf(f); }
+inline float floorF(float f) { return floorf(f); }
+inline float ceilF(float f) { return ceilf(f); }
+inline float sqrtF(float f) { return sqrtf(f); }
+inline float sinF(float f) { return sinf(f); }
+inline float cosF(float f) { return cosf(f); }
+inline float tanF(float f) { return tanf(f); }
+inline float asinF(float f) { return asinf(f); }
+inline float acosF(float f) { return acosf(f); }
+inline float atan2F(float y, float x) { return atan2f(y, x); }
+inline float expF(float f) { return expf(f); }
+inline float logF(float f) { return logf(f); }
+inline float log10F(float f) { return log10f(f); }
+inline float powF(float x, float y) { return powf(x, y); }
+#endif
+
+
+inline double fabsF(double f) { return fabs(f); }
+inline double floorF(double f) { return floor(f); }
+inline double ceilF(double f) { return ceil(f); }
+inline double sqrtF(double f) { return sqrt(f); }
+inline double sinF(double f) { return sin(f); }
+inline double cosF(double f) { return cos(f); }
+inline double tanF(double f) { return tan(f); }
+inline double asinF(double f) { return asin(f); }
+inline double acosF(double f) { return acos(f); }
+inline double atan2F(double y, double x) { return atan2(y, x); }
+inline double expF(double f) { return exp(f); }
+inline double logF(double f) { return log(f); }
+inline double log10F(double f) { return log10(f); }
+inline double powF(double x, double y) { return pow(x, y); }
+
+/* __END__END__ */
+/***********************************************************************/
+#endif
+/***********************************************************************
+ *	END OF float
+ ***********************************************************************/

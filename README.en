@@ -1,0 +1,89 @@
+------------------------------------------------------------
+                        Cannon Smash
+------------------------------------------------------------
+                                              nan@utmc.or.jp
+
+1. Introduction
+ CannonSmash is a 3D tabletennis game. The goal of this project is to 
+represent various strategy of tabletennis on computer game. 
+
+2. Requirements
+ This program requires OpenGL and SDL. Please install these components 
+first. If your machine doesn't have 3D accelaration video card, this 
+program runs very slowly.
+
+OpenGL:
+  Windows 95    You have nothing to do if your Window 95 is OSR2 or newer. 
+                If not, please get 
+                ftp://ftp.microsoft.com/softlib/mslfiles/opengl95.exe
+                and install. 
+  Windows 98    You have nothing to do. 
+  Windows NT4.0 You have nothing to do. 
+  Windows 2000  You have nothing to do. 
+  Linux 2.2.x   Please install Mesa3D. 
+
+SDL:
+  Please install SDL 1.1.7 or later. If you install SDL_Mixer, sound will be
+  enabled. 
+  Get SDL from http://www.libsdl.org/ and install. 
+
+3. Install
+3.1. Install from source code
+
+To install, type like this. 
+
+# ./configure
+# make
+# make install
+
+If your path is correct, you can start game by typing like this. 
+
+# csmash
+
+3.2. Install from binary package
+We have binary packages for some platforms(Windows, Linux). But some 
+of them are old, so please install from source package if you can. 
+
+4. How to start game
+Input like this.
+# csmash
+
+or doubleclick csmash icon if you can. 
+
+Then, you can see the initial window. There are some buttons, but at
+first, push "Game Start!" to start game. Please read
+http://CannonSmash.SourceForge.net/ for details of initial window. 
+
+5. Multiplayer play
+Cannon Smash supports multiplayer mode since version 0.4.0. 
+Two PC connected by LAN or the internet is needed to play
+multiplayer game. 
+To play on LAN or the Internet, you have to input some information
+in ititial window. Refer to http://CannonSmash.SourceForge.net/ for
+the information. 
+
+
+  [About Cannon Smash over the internet]
+  Cannon Smash development team have been testing this function as mush as
+  possible. But our machines and internet environments are restricted, 
+  so we can't test for all environments. 
+
+  As we have developed this function for a few months, and finally we can
+  play this game between a machine in Japan and a machine in U.S.A. 
+  We think that this is sufficient and we decided to publish the new
+  version, but we have to say that we can't guarantee that you can play
+  this game over the internet if your machine and network environment
+  don't match our environment. 
+
+  Multiplayer mode need more machine power than single player mode. 
+  If your machine can't run this game smoothly on single player mode, 
+  it is hard to play on multiplayer mode with the machine. 
+  Of course, network environment also affects the possibility of
+  multiplayer mode. 
+
+
+6. Other options
+There are other options in initial window. Please refer to 
+http://CannonSmash.Sourceforge.net/ 
+
+Enjoy!

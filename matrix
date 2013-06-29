@@ -1,0 +1,541 @@
+/***********************************************************************
+ *	d:/Werk/src/csmash-0.3.8.new/matrix
+ *	$Id: matrix,v 1.3 2002/03/06 16:46:01 nan Exp $
+ *
+ *	Copyright by ESESoft.
+ *
+ *	Redistribution and use in source and binary forms, with or without
+ *	modification, are permitted provided that the following conditions
+ *	are met:
+ *
+ *	Redistributions of source code must retain the above copyright
+ *	notice, this list of conditions and the following disclaimer. 
+ *
+ *	Redistributions in binary form must reproduce the above copyright
+ *	notice, this list of conditions and the following disclaimer
+ *	in the documentation and/or other materials provided with the
+ *	distribution. 
+ *
+ *	The name of the author may not be used to endorse or promote
+ *	products derived from this software without specific prior written
+ *	permission. 
+ *
+ *	THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS
+ *	OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ *	WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ *	ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
+ *	DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ *	DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ *	GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ *	INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ *	WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ *	NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ *	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ ***********************************************************************/
+#ifndef __ESESoft_wata_7520__matrix__INCLUDED__
+#define __ESESoft_wata_7520__matrix__INCLUDED__
+/***********************************************************************/
+
+#include <iostream>
+#include "float"
+
+/* __BEGIN__BEGIN__ */
+//__NAMESPACE_BEGIN(ese);
+#if (!defined __GNUG__) || (__GNUC__ == 3)
+template<typename T>
+void swap(T& a, T& b)
+{
+    T c = a;
+    a = b;
+    b = c;
+}
+#endif
+
+// matrix_size MUST BE larger than 1
+template<int matrix_size, typename _float_t = float>
+class Matrix
+{
+public:
+    enum {
+	size = matrix_size,
+    };
+    typedef _float_t float_t;
+    float_t m[matrix_size][matrix_size];
+
+    class op {
+    private:
+	float_t (*m)[matrix_size];
+	int i;
+
+    public:
+	inline op(float_t m[][matrix_size], int i)
+	  : m(m), i(i) {}
+	inline float_t& operator[](int j) {
+	    return m[i][j];
+	}
+    };
+    class const_op {
+    private:
+	const float_t (*m)[matrix_size];
+	int i;
+
+    public:
+	inline const_op(const float_t m[][matrix_size], int i)
+	  : m(m), i(i) {}
+	inline float_t operator[](int j) const {
+	    return m[i][j];
+	}
+    };
+
+public:
+    //======================================================================
+    inline Matrix() {}
+    explicit Matrix(float_t e) {
+	for (int i = 0; matrix_size > i; i++) {
+	    for (int j = 0; matrix_size > j; j++) {
+		if (i == j) m[i][j] = e;
+		else m[i][j] = 0;
+	    }
+	}
+    }
+    explicit inline Matrix(float_t e[matrix_size*matrix_size]) {
+	memcpy(m, e, sizeof(m));
+    }
+    Matrix & operator *=(float_t a) {
+	float_t *p = (float_t*)m;
+	for (int i = 0; matrix_size * matrix_size > i; i++) p[i] *= a;
+	return *this;
+    }
+    inline Matrix & operator /=(float_t a) {
+	return operator *=(1/a);
+    }
+    
+    Matrix & operator +=(const Matrix &a) {
+	float_t *p = (float_t*) m;
+	const float_t *q = (float_t*) a.m;
+	for (int i = 0; matrix_size * matrix_size > i; i++) p[i] += q[i];
+	return *this;
+    }
+    Matrix & operator -=(const Matrix &a) {
+	float_t *p = (float_t*) m;
+	const float_t *q = (float_t*) a.m;
+	for (int i = 0; matrix_size * matrix_size > i; i++) p[i] -= q[i];
+	return *this;
+    }
+    Matrix & operator *=(const Matrix &a) {
+	Matrix t(*this);
+	for (int i = 0; matrix_size > i; i++) {
+	    for (int j = 0; matrix_size > j; j++) {
+		float_t d = 0;
+		for (int k = 0; matrix_size > k; k++) {
+		    d += t.m[i][k] * a.m[k][j];
+		}
+		m[i][j] = d;
+	    }
+	}
+	return *this;
+    }
+
+    // type-safe implementation
+    inline const_op operator[](int i) const {
+	return const_op(m, i);
+    }
+    inline op operator[](int i) {
+	return op(m, i);
+    }
+	
+    float_t det() const throw() {
+	Matrix a(*this);
+	return a.inverse();
+    }
+
+    Matrix operator ~() const {
+	Matrix a(*this);
+	if (0 != a.inverse()) return a;
+	else return Matrix(float_t(0));
+    }
+	
+    //======================================================================
+private:
+    // gauss-jordan
+    float_t inverse() {
+	int pivot[matrix_size];
+	int i;
+	for (i = 0; matrix_size > i; i++) pivot[i] = i;
+	float_t d = 1;
+	for (int k = 0; matrix_size > k; k++) {
+	    float_t mx = fabsF(m[pivot[k]][pivot[k]]);
+	    int piv = k;
+	    for (i =  k+1; matrix_size > i; i++) {
+		float_t x = fabsF(m[pivot[i]][pivot[i]]);
+		if (x > mx) {
+		    piv = i;
+		    mx = x;
+		}
+	    }
+	    swap(pivot[k], pivot[piv]);
+
+	    int kk = pivot[k];
+	    float_t t = m[kk][kk];
+	    if (0 == t) {
+		return 0;
+	    }
+	    d *= t;
+	    for (int i = 0; matrix_size > i; i++) {
+		m[kk][i] /= t;
+	    }
+	    m[kk][kk] = 1 / t;
+	    for (int j = 0; j < matrix_size; j++) {
+		if (kk != j) {
+		    float_t u = m[j][kk];
+		    for (int i = 0; matrix_size > i; i++) {
+			if (kk != i) m[j][i] -= m[kk][i] * u;
+			else m[j][i] = -u / t;
+		    }
+		}
+	    }
+	}
+	return d;
+    }
+	
+#if 0
+    // using double precision calculus
+    float_t inverse(float*) {
+	double a[matrix_size][matrix_size];
+	
+	for (int i = 0; matrix_size * matrix_size > i; i++) {
+	    ((double*)a)[i] = ((float_t*)m)[i];
+	}
+
+	int pivot[matrix_size];
+	for (i = 0; matrix_size > i; i++) pivot[i] = i;
+
+	double d = 1;
+	for (int k = 0; matrix_size > k; k++) {
+	    double mx = fabsF(a[pivot[k]][pivot[k]]);
+	    int piv = k;
+	    for (i =  k+1; matrix_size > i; i++) {
+		double x = fabsF(a[pivot[i]][pivot[i]]);
+		if (x > mx) {
+		    piv = i;
+		    mx = x;
+		}
+	    }
+	    swap(pivot[k], pivot[piv]);
+
+	    int kk = pivot[kk];
+	    double t = a[kk][kk];
+	    if (0 == t) {
+		return 0;
+	    }
+	    d *= t;
+	    for (int i = 0; matrix_size > i; i++) {
+		a[kk][i] /= t;
+	    }
+	    a[kk][kk] = 1 / t;
+	    for (int j = 0; j < matrix_size; j++) {
+		if (kk != j) {
+		    double u = a[j][kk];
+		    for (int i = 0; matrix_size > i; i++) {
+			if (kk != i) a[j][i] -= a[kk][i] * u;
+			else a[j][i] = -u / t;
+		    }
+		}
+	    }
+	}
+	for (i = 0; matrix_size * matrix_size > i; i++) {
+	    ((float_t*)m)[i] = ((double*)a)[i];
+	}
+	return (float_t)d;
+    }
+
+// using LU decompisition
+    double inv() {
+	int i, j, k, ii, ik;
+	double t, u, det;
+	int ip[matrix_size];
+	double weight[matrix_size];
+	double a[matrix_size][matrix_size];
+
+	for (i = 0; matrix_size * matrix_size > i; i++) {
+	    ((double*)a)[i] = ((float_t*)m)[i];
+	}
+
+	/* LU decompose */
+	for (k = 0; matrix_size > k; k++) {
+	    ip[k] = k;
+	    u = 0;
+	    for (j = 0; matrix_size > j; j++) {
+		t = fabsF(a[k][j]);
+		if (t > u) u = t;
+	    }
+	    if (0 == u)	return 0;
+	    weight[k] = 1 / u;
+	}
+	det = 1;
+	for (k = 0; matrix_size > k; k++) {
+	    u = -1;
+	    for (i = k; matrix_size > i; i++) {
+		ii = ip[i];
+		t = fabsF(a[ii][k]) * weight[ii];
+		if ( t > u) { u = t; j = i; }
+	    }
+	    ik = ip[j];
+	    if (j != k) {
+		swap(ip[j], ip[k]);
+		det = -det;
+	    }
+	    u = a[ik][k];
+	    det *= u;
+	    if (0 == u) return 0;
+	    for (i = k + 1; matrix_size > i; i++) {
+		ii = ip[i];
+		t = (a[ii][k] /= u);
+		for (j = k + 1; matrix_size > j; j++) {
+		    a[ii][j] -= t * a[ik][j];
+		}
+	    }
+	}
+	if (0 == det) return 0;
+
+	/* inverse */
+	for (k = 0; matrix_size > k; k++) {
+	    for (i = 0; matrix_size > i; i++) {
+		ii = ip[i];
+		t = (ii == k) ? 1 : 0;
+		for (j = 0; i > j; j++) {
+		    t -= a[ii][j] * m[j][k];
+		}
+		m[i][k] = t;
+	    }
+	    for (i = matrix_size - 1; i >= 0; i--) {
+		t = m[i][k];
+		ii = ip[i];
+		for (j = i + 1; matrix_size > j; j++) {
+		    t -= a[ii][j] * m[j][k];
+		}
+		m[i][k] = t / a[ii][i];
+	    }
+	}
+	return det;
+    }
+#endif
+
+    //======================================================================
+public:
+    friend Matrix operator -(const Matrix &a) {
+	Matrix t;
+	float_t *p = (float_t *)t.m;
+	const float_t *q = (float_t*) a.m;
+	for (int i = 0; matrix_size * matrix_size > i; i++) {
+	    p[i] = -q[i];
+	}
+	return t;
+    }
+    inline friend Matrix operator +(const Matrix &a, const Matrix &b) {
+	Matrix t(a);
+	return t += b;
+    }
+    inline friend Matrix operator -(const Matrix &a, const Matrix &b) {
+	Matrix t(a);
+	return t -= b;
+    }
+    friend Matrix operator *(const Matrix &a, const Matrix &b) {
+	Matrix t;
+	for (int i = 0; matrix_size > i; i++) {
+	    for (int j = 0; matrix_size > j; j++) {
+		float_t d = 0;
+		for (int k = 0; matrix_size > k; k++) {
+		    d += a.m[i][k] * b.m[k][j];
+		}
+		t[i][j] = d;
+	    }
+	}
+	return t;
+    }
+
+    inline friend Matrix operator *(const Matrix &a, float_t b) {
+	Matrix t(a);
+	return a *= b;
+    }
+    inline friend Matrix operator *(float_t b, const Matrix &a) {
+	return a * b;
+    }
+    inline friend Matrix operator /(const Matrix &a, float_t b) {
+	return a * (1/b);
+    }
+
+    friend std::ostream& operator <<(std::ostream &s, const Matrix &t) {
+	for (int i = 0; matrix_size > i; i++) {
+	    s << '|';
+	    for (int j = 0; matrix_size > j; j++) {
+		s << t[i][j];
+		if (matrix_size - 1 != j) s << ' ';
+	    }
+	    s << '|';
+	    if (matrix_size-1 != i)  s << std::endl;
+	}
+	return s;
+    }
+};
+
+// vector_size MUST BE larger than 1.
+template <int vector_size, typename _float_t = float>
+class Vector
+{
+public:
+    enum {
+	size = vector_size,
+    };
+    typedef _float_t float_t;
+
+    float_t v[vector_size];
+
+    inline Vector() {}
+    inline explicit Vector(float_t e) {
+	for (int i = 0; vector_size > i; i++) v[i] = e;
+    }
+
+    inline float_t& operator [](int i) { return v[i]; }
+    inline float_t operator [](int i) const { return v[i];}
+    inline Vector & operator *=(float_t a) {
+	for (int i = 0; vector_size > i; i++) v[i] *= a;
+	return *this;
+    }
+    inline Vector & operator /=(float_t a) {
+	return operator *=(1/a);
+    }
+
+    inline Vector & operator +=(const Vector &a) {
+	for (int i = 0; vector_size > i; i++) {
+	    v[i] += a.v[i];
+	}
+	return *this;
+    }
+    inline Vector & operator -=(const Vector &a) {
+	for (int i = 0; vector_size > i; i++) {
+	    v[i] -= a.v[i];
+	}
+	return *this;
+    }
+
+    Vector & operator *=(const Matrix<vector_size,float_t> &t) {
+	Vector a(*this);
+	for (int i = 0; vector_size > i; i++) {
+	    float_t d = 0;
+	    for (int j = 0; vector_size > j; j++) {
+		d += a.v[j] * t[j][i];
+	    }
+	    v[i] = d;
+	}
+	return *this;
+    }
+
+    inline float_t len2() const {
+	float_t l = 0;
+	for (int i = 0; vector_size > i; i++) {
+	    l += v[i]*v[i];
+	}
+	return l;
+    }
+
+    inline float_t len() const {
+	return sqrtF(len2());
+    }
+
+    Vector norm() const {
+	float_t d = 1/len();
+	if (d == 0) return Vector(0);
+	Vector r;
+	for (int i = 0; vector_size > i; i++) {
+	    r[i] = v[i] * d;
+	}
+	return r;
+    }
+
+    Vector & normalize() {
+	float_t d = 1/len();
+	if (0 == d) bzero(v, sizeof(v));
+	else {
+	    for (int i = 0; vector_size > i; i++) {
+		v[i] *= d;
+	    }
+	}
+	return *this;
+    }
+
+    inline friend Vector operator -(const Vector &a) {
+	Vector v;
+	for (int i = 0; vector_size > i; i++) {
+	    v.v[i] = -a.v[i];
+	}
+	return v;
+    }
+    friend Vector operator +(const Vector &a, const Vector &b) {
+	Vector v;
+	for (int i = 0; vector_size > i; i++) {
+	    v.v[i] = a.v[i] + b.v[i];
+	}
+	return v;
+    }
+
+    friend Vector operator -(const Vector &a, const Vector &b) {
+	Vector v;
+	for (int i = 0; vector_size > i; i++) {
+	    v.v[i] = a.v[i] - b.v[i];
+	}
+	return v;
+    }
+
+    friend Vector operator *(float_t d, const Vector &a) {
+	Vector v;
+	for (int i = 0; vector_size > i; i++) {
+	    v.v[i] = a.v[i] * d;
+	}
+	return v;
+    }
+    friend float_t operator *(const Vector &a, const Vector &b) {
+	float_t d = 0;
+	for (int i = 0; vector_size > i; i++) {
+	    d += a[i] * b[i];
+	}
+	return d;
+    }
+
+    friend inline Vector operator *(const Vector &a, float_t d) {
+	Vector v(a);
+	return v *= d;
+    }
+    friend inline Vector operator /(const Vector &a, float_t d) {
+	return a * (1/d);
+    }
+    friend Vector operator *(const Vector &a, const Matrix<vector_size,float_t> &t) {
+	Vector v;
+	for (int i = 0; vector_size > i; i++) {
+	    float_t d = 0;
+	    for (int j = 0; vector_size > j; j++) {
+		d += a.v[j] * t[j][i];
+	    }
+	    v.v[i] = d;
+	}
+	return v;
+    }
+
+    friend std::ostream& operator <<(std::ostream &s, const Vector &v) {
+	s << '(';
+	for (int i = 0; vector_size > i; i++) {
+	    s << v[i];
+	    if (vector_size - 1 != i) s << ' ';
+	}
+	return s << ')';
+    }
+};
+//__NAMESPACE_END(ese);
+
+/* __END__END__ */
+
+#endif
+/***********************************************************************
+ *	END OF Matrix
+ ***********************************************************************/

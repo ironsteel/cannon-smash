@@ -1,0 +1,66 @@
+#
+# Makefile for win32
+# $Id: Makefile.nt,v 1.6 2001/12/25 15:18:35 yotsuya Exp $
+#
+############################################################################
+.SUFFIXES: .exe .so .dll .res .a .lib .o .obj .cpp .cc .c .asm .s .y .h .rc .l
+
+.c.obj:
+	$(CC) $(Cpre) $(CFLAGS) $(Cpost) $<
+.cpp.obj:
+	$(CXX) $(CXXpre) $(CXXFLAGS) $(CXXpost) $<
+.cc.obj:
+	$(CXX) $(CXXpre) $(CXXFLAGS) $(CXXpost) $<
+.rc.res:
+	$(RC) $(RCpre) $(RCFLAGS) $(RCpost) $<
+
+############################################################################
+CC = cl -nologo -W3
+CXX = $(CC)
+
+Cpost = -c -Tc
+CXXpost = -c -Tp
+
+#CFLAGS = -MD -Ox -G6 -vms $(INCDIRS)
+
+CXXFLAGS=$(CFLAGS) -GX
+
+RC	= rc
+RCFLAGS	=
+
+O = obj
+A = lib
+SO = dll
+EXE = .exe
+AOUT = -Fe
+
+############################################################################
+INCDIRS	= -I.
+
+OBJS = GetArgs.obj wsaerror.obj getopt.obj wsainit.obj new_exception.obj
+LIBRARY = libwin32.lib
+TARGET = libwin32.lib csmash.res
+
+############################################################################
+all: $(TARGET)
+	touch all
+clean:
+	rm -f $(TARGET) *.$(O) *.res all
+distclean:
+	rm -f $(TARGET) *.$(O) *.res *~ *.bak depend.nt all
+
+libwin32.lib : $(OBJS)
+	rm -f $@
+	lib /out:$@ $(OBJS)
+
+depend:
+	touch depend.nt
+	makedepend -fdepend.nt $(INCDIRS) -D_WIN32 -DHAVE_LIBZ *.cpp
+	cat depend.nt | sed -e "s/.:\/.*\/VC98[^ ]*include\/[^ ]*//g" \
+	| grep -v ".*:[ ]*$$" > depend.new
+	mv depend.new depend.nt
+
+#-include depend.nt
+############################################################################
+# END
+############################################################################

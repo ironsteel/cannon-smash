@@ -1,0 +1,120 @@
+#
+# Makefile for gmake (It should run with Microsoft's nmake... I believe.)
+# $Id: Makefile.nt,v 1.31 2003/07/29 17:06:04 nan Exp $
+#
+############################################################################
+.SUFFIXES: .exe .so .dll .a .lib .o .obj .cpp .cc .c .asm .s .y .pch .h .l
+
+.c.obj:
+	$(CC) $(CFLAGS) $(IFLAGS) $(Cpost) $<
+.cpp.obj:
+	$(CXX) $(CXXFLAGS) $(IFLAGS) $(CXXpost) $<
+.cc.obj:
+	$(CXX) $(CXXFLAGS) $(IFLAGS) $(CXXpost) $<
+
+############################################################################
+CC = cl -nologo -W3
+CXX = $(CC)
+
+Cpost = -c -Tc
+CXXpost = -c -Tp
+
+#CFLAGS = -MD -Ox -Ob2 -Ow -G6 -vms $(DFLAGS) $(INCDIRS)
+CFLAGS = -MD -Od -Zi -G6 -vms $(DFLAGS) $(INCDIRS) -DWIN32CONSOLE
+
+CXXFLAGS=$(CFLAGS) -GX
+
+IFLAGS	= -Yuttinc.h
+
+O = obj
+A = lib
+SO = dll
+EXE = .exe
+AOUT = -Fe
+
+############################################################################
+BASEDIR	= .$(BDIR)
+VPATH = $(BASEDIR)
+
+#DFLAGS = -DHAVE_LIBZ -DHAVE_LIBSDL_MIXER -DHAVE_LIBVORBIS -DUSE_GETTEXT_DLL
+#DFLAGS = -DHAVE_LIBZ -DHAVE_LIBSDL_MIXER -DHAVE_LIBVORBIS -DUSE_GETTEXT_DLL -DENABLE_IPV6
+#DFLAGS = -DHAVE_LIBZ -DHAVE_LIBSDL_MIXER -DHAVE_LIBVORBIS -DUSE_GETTEXT_DLL -DCHIYO
+DFLAGS = -DHAVE_LIBZ -DHAVE_LIBSDL_MIXER -DHAVE_LIBVORBIS
+
+INCDIRS = -I$(BASEDIR) -I$(BASEDIR)/include/ \
+	  -I$(BASEDIR)/include/glib-2.0/ -I$(BASEDIR)/include/gtk-2.0/ \
+	  -I$(BASEDIR)/include/pango-1.0/ -I$(BASEDIR)/include/atk-1.0/ \
+	  -I$(BASEDIR)/lib/glib-2.0/include/ -I$(BASEDIR)/lib/gtk-2.0/include/
+
+LIBS =	$(BASEDIR)/win32/GetArgs.obj $(BASEDIR)/win32/getopt.obj \
+	$(BASEDIR)/win32/new_exception.obj $(BASEDIR)/win32/wsaerror.obj \
+	$(BASEDIR)/win32/wsainit.obj $(BASEDIR)/win32/csmash.res \
+	SDL.lib SDL_mixer.lib SDL_image.lib \
+	gtk-win32-2.0.lib glib-2.0.lib gobject-2.0.lib iconv-1.3.lib zlib.lib \
+	opengl32.lib glu32.lib winmm.lib ws2_32.lib intl.lib \
+	user32.lib gdi32.lib \
+	-link /LIBPATH:$(BASEDIR)/lib
+
+SRCS = \
+	Ball.cpp BallView.cpp BaseView.cpp Event.cpp HitMark.cpp \
+	Howto.cpp HowtoView.cpp LoadImage.cpp PenAttack.cpp \
+	PenDrive.cpp Player.cpp PlayerSelect.cpp PlayerSelectView.cpp \
+	ShakeCut.cpp Sound.cpp Title.cpp TitleView.cpp PlayerView.cpp \
+	View.cpp comPenAttack.cpp comPenDrive.cpp comPlayer.cpp \
+	comShakeCut.cpp ComTrainingPenAttack.cpp TrainingPenAttack.cpp \
+	MultiPlay.cpp TrainingPenDrive.cpp ComTrainingPenDrive.cpp \
+	TrainingSelect.cpp TrainingSelectView.cpp TrainingView.cpp \
+	PracticePlay.cpp PracticeSelect.cpp PracticeSelectView.cpp \
+	FieldView.cpp SoloPlay.cpp PlayGame.cpp Control.cpp Training.cpp \
+	Opening.cpp OpeningView.cpp MenuItem.cpp MenuItemView.cpp \
+	z.cpp parts.cpp xerror.cpp Launcher.cpp LauncherView.cpp \
+	LobbyClient.cpp LobbyClientView.cpp \
+	Logging.cpp BaseView2D.cpp FieldView2D.cpp PlayerView2D.cpp \
+	BallView2D.cpp PlayerSelectView2D.cpp TitleView2D.cpp \
+	MenuItemView2D.cpp RCFile.cpp PlayGameView.cpp Network.cpp \
+	NetPenAttack.cpp NetShakeCut.cpp NetPenDrive.cpp \
+	MultiPlayerSelect.cpp \
+	loadparts.cpp
+
+OBJS = $(SRCS:.cpp=.obj)
+
+TARGET = csmash$(EXE)
+
+###########################################################################
+all: $(TARGET)
+
+clean:
+	rm -f $(TARGET) *.$(O) *.pch *.pdb
+	cd $(BASEDIR)/win32 && $(MAKE) -f Makefile.nt CFLAGS="$(CFLAGS)" clean
+
+distclean:
+	rm -f $(TARGET) *.$(O) *.pch *.pdb *~ *.bak .depend.nt
+	cd $(BASEDIR)/win32 && $(MAKE) -f Makefile.nt CFLAGS="$(CFLAGS)" distclean
+
+# remove absolute paths from dependency file
+depend:
+	touch .depend.nt
+	makedepend -i -f.depend.nt -DMKDEP_IGN_SYSINC -D_WIN32 $(DFLAGS) \
+	  -I$(BASEDIR) $(BASEDIR)/*.cpp
+	cat .depend.nt | sed -e "s/.:\/.*\/[iI]nclude\/[^ ]*//g" \
+	| grep -v ".*:[ ]*$$" > .depend.new
+	mv .depend.new .depend.nt
+
+$(TARGET): $(OBJS) main.$(O) $(BASEDIR)/win32/all
+	$(CC) $(CFLAGS) $(AOUT)$(BASEDIR)/$@ main.$(O) $(OBJS) $(LIBS)
+
+$(OBJS) : ttinc.pch
+
+ttinc.pch: ttinc.h ttinc.cpp
+	$(CXX) $(CXXFLAGS) $(IFLAGS) -Ycttinc.h $(CXXpost) $(BASEDIR)/ttinc.cpp
+
+$(BASEDIR)/win32/all:
+	cd $(BASEDIR)/win32 && \
+	$(MAKE) -f Makefile.nt CFLAGS="$(CFLAGS)" all
+
+# include directive is not available in nmake.exe
+# If you are using gnu-make, uncomment next line.
+#-include .depend.nt
+############################################################################
+# END
+############################################################################

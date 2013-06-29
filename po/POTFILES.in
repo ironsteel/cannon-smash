@@ -1,0 +1,18 @@
+# header files:
+# the csmash headers do not contain text
+LobbyClient.h
+
+# source files:
+BaseView.cpp
+Event.cpp
+FieldView.cpp
+LauncherView.cpp
+LobbyClientView.cpp
+main.cpp
+MenuItemView.cpp
+parts.cpp
+Player.cpp
+PlayGame.cpp
+PlayerSelectView.cpp
+RCFile.cpp
+Sound.cpp

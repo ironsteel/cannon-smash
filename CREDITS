@@ -1,0 +1,28 @@
+yotsuya			Add datafile compression, smooth shading, 
+<?@utmc.or.jp>          and many other contributions. 
+----------------------------------------------------------------------
+<odradek@videotron.ca>	Create rpm package.
+----------------------------------------------------------------------
+<trackman@mfa.gr>	Patch for Voodoo 2. 
+----------------------------------------------------------------------
+Pavel Bibergal		Make wall texture image. 
+<pavel@dimona.org.il>
+----------------------------------------------------------------------
+Markus F.X.J. Oberhumer ALT+Enter fullscreen toggle patch
+<markus@oberhumer.com>  (http://sourceforge.net/patch/?func=detailpatch&
+                         patch_id=103576&group_id=4179)
+----------------------------------------------------------------------
+Dan			Make player model prototype. 
+<dan.b@hotml.com>
+----------------------------------------------------------------------
+Hideaki Tanabe		Make Opening Music. 
+<arctanx@hauN.org>
+----------------------------------------------------------------------
+J. Henning Schwentner	Contribute i18n patch and German message patch. 
+<hschwentner@lanthan.de>
+Lanthan Software KG, 
+Germany
+----------------------------------------------------------------------
+Lucien Saviot		Contribute French message patch. 
+<Lucien.Saviot@u-bourgogne.fr>
+----------------------------------------------------------------------
